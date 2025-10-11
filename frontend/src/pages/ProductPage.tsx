@@ -1,16 +1,16 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { BiArrowBack } from "react-icons/bi";
 import { addToCart } from "../utils/cart";
 import { useStore } from "../stores/store";
 import { toast } from "react-toastify";
 import QuantityDropdown from "../components/QuantityDropdown";
+import BackArrow from "../components/BackArrow";
+import Img from "../assets/Untitled.png";
 
 interface Product {
+  id: number;
   name: string;
-  rating: number;
-  stock: number;
   price: number;
 }
 
@@ -23,11 +23,10 @@ const ProductPage: React.FC = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get<Product>(
-          import.meta.env.VITE_BACKEND_URL + `/user/getproduct/${id}`
-        )
+        .get(import.meta.env.VITE_BACKEND_URL + `/user/getProduct/${id}`)
         .then((response) => {
-          setProduct(response.data);
+          setProduct(response.data?.products);
+          // console.log(response?.data?.products.name);
         })
         .catch((error) => {
           console.error("Error fetching product data: ", error);
@@ -37,22 +36,30 @@ const ProductPage: React.FC = () => {
 
   if (!product) return <div>Loading...</div>;
 
+  console.log(product);
+
   return (
     <>
-      <div className="pt-15 p-2 dark:bg-[#201E1E] dark:text-white">
+      <div className="pt-15 p-2 bg-gradient-to-tr from-blue-600 via-purple-500 to-black">
         {" "}
-        <BiArrowBack
-          className="hidden sm:block absolute top-14 left-1 h-8 w-8 rounded-full bg-gray-100 dark:text-black cursor-pointer hover:bg-gray-200"
-          onClick={() => navigate(-1)}
-        />
-        <img src="" alt="" className="block object-cover h-80 w-80" />
-        <h1 className="text-xl font-bold">{product.name}</h1>
+        <BackArrow left={25} />{" "}
+        <div className="w-full flex justify-center">
+          <div className="bg-black/50 h-80 w-full shadow-2xl flex items-center justify-center">
+            <img src={Img} alt="" className="block object-cover h-auto w-fit" />
+            {/* <div className="bg-gray-400 h-79 w-80 flex justify-center items-center">
+              Img/Loader here
+            </div> */}
+          </div>
+        </div>
+        <h1 className="text-2xl font-bold w-full text-center">
+          {product.name}
+        </h1>
         <div className="mt-10 space-y-10">
           <div className="border p-2 space-y-2">
             <div className="space-y-2">
-              <p className="text-lg font-bold text-green-700">
-                In Stock: {product.stock}
-              </p>
+              {/* <p className="text-lg font-bold text-green-700">
+                In Stock: {product.inStock}
+              </p> */}
               <QuantityDropdown price={product.price} />
               <button
                 className="w-full text-black bg-amber-400 hover:bg-amber-300 py-1 rounded-lg active:bg-amber-400 cursor-pointer"

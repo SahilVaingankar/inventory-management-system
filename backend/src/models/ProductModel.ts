@@ -1,7 +1,12 @@
+import { number } from "joi";
 import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema(
   {
+    id: {
+      type: Number,
+      required: true,
+    },
     name: {
       type: String,
       required: true,
@@ -18,11 +23,9 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    description: {
-      type: String,
-    },
-    imageUrl: {
-      type: String,
+    remainingStock: {
+      type: Number,
+      required: true,
     },
   },
   { timestamps: true } // automatically adds createdAt and updatedAt

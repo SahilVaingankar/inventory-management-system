@@ -1,18 +1,45 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import BackArrow from "../components/BackArrow";
+import axios from "axios";
+import { useStore } from "../stores/store";
+import axiosInstance from "../services/axios";
 
 const Register = () => {
+  const { setLogin } = useStore();
+  const navigate = useNavigate();
+
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!email || !password || !username)
       toast.error("Please fill in all fields");
-    toast.success("Register successful!");
+    if (password.length >= 5 && password.length <= 20) {
+      try {
+        await axiosInstance.post(
+          import.meta.env.VITE_BACKEND_URL + "/auth/register",
+          { email, password, username }
+        );
+        setLogin(true);
+
+        toast.success("register successful");
+        navigate("/");
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          toast.error(
+            error.response?.data?.error?.details?.[0]?.message ||
+              error.response?.data.message ||
+              "Register failed"
+          );
+        } else {
+          toast.error("Unexpected register error");
+        }
+      }
+    }
   };
 
   return (
@@ -24,10 +51,10 @@ const Register = () => {
         <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
 
         <div>
-          <label className="block mb-2">Email</label>
+          <label className="block mb-2">Username</label>
           <input
             type="text"
-            value={email}
+            value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="Username"
             className="w-full p-2 border rounded mb-4 outline-none cursor-pointer"

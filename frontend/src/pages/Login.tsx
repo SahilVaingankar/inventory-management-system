@@ -1,16 +1,49 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import BackArrow from "../components/BackArrow";
+import axios from "axios";
+import { useStore } from "../stores/store";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { setLogin } = useStore();
+  const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!email || !password) toast.error("Please fill in all fields");
-    toast.success("Login successful!");
+    if (password.length >= 5 && password.length <= 20) {
+      try {
+        await axios.post(
+          import.meta.env.VITE_BACKEND_URL + "/auth/login",
+          { email, password },
+          {
+            withCredentials: true,
+          }
+        );
+        setLogin(true);
+        toast.success("login successful");
+        navigate("/");
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          toast.error(
+            error.response?.data?.error?.details?.[0]?.message ||
+              error.response?.data.message ||
+              "login failed"
+          );
+        } else {
+          toast.error("Unexpected login error");
+        }
+      }
+    } else {
+      if (password.length < 5) {
+        toast.error("Password must be atleast 5 charectors long");
+      } else {
+        toast.error("Password must not be grater then 20 charectors");
+      }
+    }
   };
 
   return (

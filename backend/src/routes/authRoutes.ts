@@ -23,8 +23,3 @@ authRouter.post("/register", RegistrationValidation, register);
 authRouter.post("/login", LoginValidation, login);
 authRouter.post("/logout", logout);
 authRouter.post("/refresh", refresh);
-authRouter.post("/send-verify-otp", userAuth, sendVerifyOtp);
-authRouter.post("/verify-account", userAuth, verifyEmail);
-authRouter.get("/is-auth", userAuth, isAuthenticated);
-authRouter.post("/send-reset-otp", sendResetOtp);
-authRouter.post("/reset-password", resetPassword);

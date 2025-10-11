@@ -39,7 +39,7 @@ const Home = () => {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <div className="flex flex-col item-center justify-center mt-25 my-10 px-5">
+        <div className="flex flex-col item-center justify-center mt-25 my-10 px-5 dark:bg-black">
           <section className="grid grid-cols-2 md:grid-cols-3 gap-5 mt-4 w-full">
             {filteredProducts.map((prod: any) => (
               // <Cards

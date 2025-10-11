@@ -21,7 +21,7 @@ export const getUserData = async (req: AuthenticatedRequest, res: Response) => {
       success: true,
       userData: {
         name: user.username,
-        isAccountVerified: user.isAccountVerified,
+        role: user.role,
       },
     });
     console.log("data sent to frontend successfully");
@@ -50,7 +50,11 @@ export const getProduct = async (req: Request, res: Response) => {
   try {
     // Logic to fetch product data from the database
     const { id } = req.params;
-    const products = await ProductModel.find({ id });
+    const products = await ProductModel.findOne({ id });
+    console.log(req.params.id);
+
+    console.log(products);
+
     res.status(200).json({
       success: true,
       products, // send the array of products
