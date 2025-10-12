@@ -89,7 +89,7 @@ const Cards = ({
       <button
         className={`mt-auto py-2 rounded ${
           inStock
-            ? "bg-indigo-600 text-white"
+            ? "bg-indigo-600 text-white cursor-pointer hover:bg-indigo-700"
             : "bg-gray-400 text-gray-700 cursor-not-allowed"
         }`}
         disabled={!inStock}
