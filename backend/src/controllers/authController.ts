@@ -83,8 +83,8 @@ export const register = async (req: Request, res: Response) => {
     const mailOption = {
       from: process.env.SENDER_EMAIL,
       to: email,
-      subject: "Welcome to E-commerce website",
-      html: `<h1>Welcome to E-commerce website. Your account has been created with email id: ${email}</h1>`,
+      subject: "Welcome to Store",
+      html: `<h1>Welcome to Store. Your account has been created with email id: ${email}</h1>`,
     };
 
     console.log("sending email to", email);
@@ -166,7 +166,7 @@ export const login = async (req: Request, res: Response) => {
     const mailOption = {
       from: process.env.SENDER_EMAIL,
       to: email,
-      subject: "E-commerce website",
+      subject: "Store",
       html: `<h1>devie ${req.headers["user-agent"]} Logged it to this Account</h1>`,
     };
 

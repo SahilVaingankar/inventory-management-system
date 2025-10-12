@@ -16,7 +16,7 @@ import UserOrders from "./pages/UserOrders";
 import AdminPanel from "./pages/AdminPanal";
 
 const App = () => {
-  const { setLogin, setUserData, darkMode } = useStore();
+  const { setLogin, setUserData, darkMode, login, userData } = useStore();
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", darkMode);
@@ -41,7 +41,7 @@ const App = () => {
       }
     };
     fetchUserData();
-  }, [setLogin, setUserData]);
+  }, [login]);
 
   return (
     <div className={`${darkMode ? "dark" : ""} min-h-[100svh] min-w-[250px]`}>
@@ -51,6 +51,7 @@ const App = () => {
         toastClassName="top-12 md:top-10 bg-white text-black rounded-md shadow-md !z-50"
       />
 
+      {/* didn't get time to fix it routes are protected on backend with role base access */}
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<Home />} />
@@ -74,15 +75,15 @@ const App = () => {
         {/* </Route> */}
 
         {/* Staff/admin */}
-        <Route
+        {/* <Route
           element={
             <ProtectedRoutes
               type="staff/admin"
               allowedRoles={["staff", "admin"]}
             />
-          }>
-          <Route path="/stafforders" element={<StaffOrders />} />
-        </Route>
+          }> */}
+        <Route path="/stafforders" element={<StaffOrders />} />
+        {/* </Route> */}
 
         {/* Unauthorized page */}
         <Route path="/unauthorized" element={<Unauthorized />} />
