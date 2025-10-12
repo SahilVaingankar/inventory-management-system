@@ -13,8 +13,9 @@ const Searchbar = () => {
   return (
     <div className="w-full rounded-lg border mx-2 flex justify-between relative">
       <input
-        className="w-full mx-2 outline-none"
+        className="w-full mx-2 outline-none placeholder:text-gray-500"
         type="text"
+        placeholder="Search..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />

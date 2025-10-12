@@ -49,11 +49,7 @@ export const getProductData = async (req: Request, res: Response) => {
 export const getProduct = async (req: Request, res: Response) => {
   try {
     // Logic to fetch product data from the database
-    const { id } = req.params;
-    const products = await ProductModel.findOne({ id });
-    console.log(req.params.id);
-
-    console.log(products);
+    const products = await ProductModel.find();
 
     res.status(200).json({
       success: true,

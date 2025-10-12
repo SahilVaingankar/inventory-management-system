@@ -57,7 +57,7 @@ const Register = () => {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="Username"
-            className="w-full p-2 border rounded mb-4 outline-none cursor-pointer"
+            className="w-full p-2 border rounded mb-4 outline-none "
             required
           />
         </div>
@@ -68,7 +68,7 @@ const Register = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
-            className="w-full p-2 border rounded mb-4 outline-none cursor-pointer"
+            className="w-full p-2 border rounded mb-4 outline-none"
             required
           />
         </div>
@@ -79,14 +79,14 @@ const Register = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
-            className="w-full p-2 border rounded mb-4 outline-none cursor-pointer"
+            className="w-full p-2 border rounded mb-4 outline-none"
             required
           />
         </div>
 
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 cursor-pointer">
+          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
           Register
         </button>
         <p className="text-blue-500">

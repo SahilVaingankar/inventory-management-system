@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { addToCart } from "../utils/cart";
 import { FaCartPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../services/axios";
 
 interface CardsProps {
   id: number;
@@ -11,10 +12,50 @@ interface CardsProps {
   category: string;
   price: number;
   inStock: boolean;
+  quantity: number;
 }
 
-const Cards = ({ name, category, price, inStock, id }: CardsProps) => {
+interface NewOrderItem {
+  product: string; // productId
+  quantity: number;
+  price: number;
+}
+
+const Cards = ({
+  name,
+  category,
+  price,
+  inStock,
+  id,
+  quantity,
+}: CardsProps) => {
   const navigate = useNavigate();
+
+  // src/api/orderService.ts
+
+  const placeOrder = async (customerName: string, items: NewOrderItem[]) => {
+    // calculate total on frontend or backend (backend preferred)
+    console.log("presses");
+
+    try {
+      const total = items.reduce(
+        (acc, item) => acc + item.price * (item.quantity || 1),
+        0
+      );
+      const res = await axiosInstance.post(
+        import.meta.env.VITE_BACKEND_URL + "/auth/placeorder",
+        {
+          customerName,
+          items,
+          total,
+        }
+      );
+      toast.success(res.request?.message);
+    } catch (error) {
+      toast.success(`failed to place order`);
+    }
+  };
+
   return (
     <div className="flex flex-col border p-2 gap-1 rounded-md w-full h-full">
       {/* Skeleton image */}
@@ -53,8 +94,17 @@ const Cards = ({ name, category, price, inStock, id }: CardsProps) => {
         }`}
         disabled={!inStock}
         onClick={() => {
-          addToCart({ name, price, inStock }, 1);
-          toast.success(`${name} is added to the cart`);
+          placeOrder(
+            name, // using product name as customerName for now
+            [
+              {
+                product: id.toString(),
+                quantity: quantity ?? 1,
+                price,
+              },
+            ]
+          );
+          // toast.success(`order placed`);
         }}>
         Place Order
       </button>

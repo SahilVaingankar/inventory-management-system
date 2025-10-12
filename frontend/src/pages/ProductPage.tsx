@@ -55,7 +55,7 @@ const ProductPage: React.FC = () => {
           {product.name}
         </h1>
         <div className="mt-10 space-y-10">
-          <div className="border p-2 space-y-2">
+          <div className="border p-2 space-y-2 bg-white/30 backdrop-blur-2xl">
             <div className="space-y-2">
               {/* <p className="text-lg font-bold text-green-700">
                 In Stock: {product.inStock}

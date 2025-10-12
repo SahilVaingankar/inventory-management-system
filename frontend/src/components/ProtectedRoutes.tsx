@@ -9,6 +9,9 @@ const ProtectedRoutes = ({ type }: any) => {
   if (type === "guest" && !login) {
     return <Navigate to={"/login"} replace />;
   }
+  if (type === "user" && login) {
+    return <Navigate to={"/userorders"} replace />;
+  }
   return <Outlet />;
 };
 

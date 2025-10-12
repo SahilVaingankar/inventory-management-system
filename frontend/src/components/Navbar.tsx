@@ -6,6 +6,7 @@ import axios from "axios";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import PopOver from "./PopOver";
+import { AiOutlineShoppingCart } from "react-icons/ai";
 
 const Navbar = () => {
   const { setLogin, darkMode, toggleMode, login, userData, setUserData } =
@@ -33,20 +34,20 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 z-10 w-full py-2 border-b bg-white shadow-md flex justify-between px-1 sm:px-2 lg:px-4 items-center gap-0.5">
+    <nav className="fixed top-0 left-0 z-10 w-full py-2 border-b bg-white dark:bg-black dark:text-white dark:border-white dark:shadow-white shadow-md flex justify-between px-1 sm:px-2 lg:px-4 items-center gap-0.5">
       <Link to="/">
         <h1 className="font-black text-sm sm:text-lg md:xl lg:2xl xl:3xl">
           STORE
         </h1>
       </Link>
       <Searchbar />
-      <FaShoppingCart
-        className="min-h-[30px] min-w-[30px]"
+      <AiOutlineShoppingCart
+        className="min-h-[30px] min-w-[30px] mr-1"
         onClick={() => navigate("/cartpage")}
       />
       {userData ? (
         <div
-          className="w-6 h-6 flex justify-center items-center rounded-full bg-black text-white relative group cursor-pointer"
+          className="min-w-6 min-h-6 flex justify-center items-center m-auto rounded-full bg-black text-white dark:border-2 dark:border-gray-500 relative group cursor-pointer"
           tabIndex={0}
           onClick={() => {
             setIsProfileOpen(true);
@@ -60,24 +61,20 @@ const Navbar = () => {
               isProfileOpen ? "block" : "hidden"
             } group-hover:block top-0 right-0 text-black rounded pt-10 -z-10`}>
             <ul className="list-none m-0 p-2 bg-gray-100 text-sm dark:bg-gray-900 dark:text-white">
-              {/* {!userData.isAccountVerified && (
-                <PopOver
-                  message="Depreciated require real email to receive OTP"
-                  url="https://github.com/SahilVaingankar/E-CommerceWebsite/blob/main/backend/src/routes/authRoutes.ts#L26-L27"
-                  right={110}
-                  top={0}>
-                  <li
-                    onClick={sendVerificationOtp}
-                    className="py-1 px-2 dark:hover:bg-gray-700 hover:bg-gray-200 cursor-pointer group">
-                    <p>Verify Email</p>
-                  </li>
-                </PopOver>
-              )} */}
-              <li
-                onClick={logout}
-                className="py-1 px-2 dark:hover:bg-gray-700 hover:bg-gray-200 cursor-pointer pr-10">
-                Logout
-              </li>
+              {userData.role !== "user" ? (
+                <li className="py-1 px-2 dark:hover:bg-gray-700 hover:bg-gray-200 cursor-pointer group">
+                  <Link to="/stafforders">Orders</Link>
+                </li>
+              ) : (
+                <li className="py-1 px-2 dark:hover:bg-gray-700 hover:bg-gray-200 cursor-pointer group">
+                  <Link to="/userorders">Orders</Link>
+                </li>
+              )}
+              {userData.role === "admin" && (
+                <li className="py-1 px-2 dark:hover:bg-gray-700 hover:bg-gray-200 cursor-pointer group">
+                  <Link to="/admin">Admin Panal</Link>
+                </li>
+              )}
               <li
                 className="px-2 dark:hover:bg-gray-700 gap-2 flex justify-between items-center hover:bg-gray-200 cursor-pointer"
                 onClick={() => toggleMode()}>
@@ -85,11 +82,11 @@ const Navbar = () => {
                 {/* <input
                   type="checkbox"
                   className="appearance-none relative w-6 h-3 bg-gray-300 rounded-full
-               checked:bg-blue-600 cursor-pointer transition-colors
-               before:content-[''] before:absolute before:-top-0.5 before:-left-0.5 
-               before:w-4 before:h-4 before:bg-black before:rounded-full before:shadow-md
-               before:transition-transform checked:before:translate-x-4"
-                />{" "} */}
+                  checked:bg-blue-600 cursor-pointer transition-colors
+                  before:content-[''] before:absolute before:-top-0.5 before:-left-0.5 
+                  before:w-4 before:h-4 before:bg-black before:rounded-full before:shadow-md
+                  before:transition-transform checked:before:translate-x-4"
+                  />{" "} */}
 
                 <div className="relative inline-block w-12 h-6 cursor-pointer">
                   <input
@@ -101,6 +98,11 @@ const Navbar = () => {
                   <span className="block w-12 h-6 bg-gray-300 rounded-full peer-checked:bg-blue-600 transition-colors" />
                   <span className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transform transition-transform peer-checked:translate-x-6 pointer-events-none" />
                 </div>
+              </li>
+              <li
+                onClick={logout}
+                className="py-1 px-2 dark:hover:bg-gray-700 hover:bg-gray-200 cursor-pointer pr-10">
+                Logout
               </li>
             </ul>
           </div>

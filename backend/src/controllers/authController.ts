@@ -3,16 +3,12 @@ import jwt from "jsonwebtoken";
 import { UserModel } from "../models/UserModel";
 import { DeviceModel } from "../models/DeviceModel";
 import { v4 as uuidv4 } from "uuid";
-import {
-  EMAIL_VERIFY_TEMPLATE,
-  PASSWORD_RESET_TEMPLATE,
-} from "../config/emailTemplates";
 import { Request, Response } from "express";
 import { transporter } from "../config/nodemailer";
+import { OrderModel } from "../models/OrderModel";
+// import { ProductModel } from "../models/ProductModel";
 
-interface AuthenticatedRequest extends Request {
-  userId?: string;
-}
+import ProductModel from "../models/ProductModel";
 
 export const register = async (req: Request, res: Response) => {
   const { username, email, password } = req.body;
@@ -316,193 +312,343 @@ export const refresh = async (req: Request, res: Response) => {
   }
 };
 
-export const sendVerifyOtp = async (
-  req: AuthenticatedRequest,
+export const getOrders = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).userId;
+
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+    // fetch the user from DB
+    const user = await UserModel.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    let orders;
+    if (user.role === "staff" || user.role === "admin") {
+      // staff/admin see all orders
+      orders = await OrderModel.find()
+        .populate("customerId", "name email") // ✅ corrected
+        .populate("processedBy", "name email");
+    } else {
+      // user sees only their own orders
+      orders = await OrderModel.find({ customerId: user._id }) // ✅ corrected
+        .populate("customerId", "name email") // ✅ corrected
+        .populate("processedBy", "name email");
+    }
+
+    res.status(200).json({ orders });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching orders", error });
+  }
+};
+
+// Request body interface
+interface PlaceOrderRequestBody {
+  customerName: string;
+  items: {
+    product: string;
+    quantity: number;
+    price: number;
+  }[];
+  total: number;
+}
+
+// Define your controller normally with Request
+export const postorders = async (
+  req: Request<{}, {}, PlaceOrderRequestBody>,
   res: Response
 ) => {
   try {
-    if (!req.userId) {
-      return res.status(401).json({ error: "Not authenticated" });
+    const userId = (req as any).userId; // get user ID from auth middleware
+    const { customerName, items, total } = req.body;
+
+    if (!items || items.length === 0) {
+      return res.status(400).json({ message: "No items provided" });
     }
+
+    const orderItems = items.map((item) => ({
+      product: Number(item.product), // numeric ID
+      productSnapshot: {
+        name: "",
+        category: "",
+        price: item.price,
+      },
+      quantity: item.quantity ?? 1,
+      price: item.price,
+    }));
+
+    const newOrder = new OrderModel({
+      customerId: userId,
+      customerName,
+      items: orderItems,
+      total,
+    });
+
+    const savedOrder = await newOrder.save();
+    return res.status(201).json({ message: "Order placed", order: savedOrder });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Failed to place order", error });
+  }
+};
+
+// Middleware should attach user info to req.user
+export const updateOrderStatus = async (req: any, res: Response) => {
+  try {
+    const { action } = req.body; // "approve" or "reject"
+    const orderId = req.params.id;
+
+    const userId = req.userId; // populated by your auth middleware
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+    // fetch full user object
+    const user = await UserModel.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user || user.role !== "staff") {
+      return res.status(403).json({ message: "Forbidden: staff only" });
+    }
+
+    const order = await OrderModel.findById(orderId);
+    // console.log(order);
+
+    if (!order) return res.status(404).json({ message: "Order not found" });
+
+    if (action === "approve") {
+      order.status = "approved";
+
+      // console.log(order.items.product);
+      for (const item of order.items) {
+        if (item.product) {
+          console.log("🔍 Looking for product:", item.product);
+
+          // Step 1: Try finding the product by `id`
+          const product = await ProductModel.findOne({ id: item.product });
+
+          if (!product) {
+            console.log(`❌ Product with id=${item.product} not found`);
+            continue; // skip to next item
+          }
+
+          console.log(
+            "✅ Found product:",
+            product.name,
+            "Remaining stock:",
+            product.remainingStock
+          );
+
+          // Step 2: Update remainingStock manually
+          const updatedStock = product.remainingStock - item.quantity;
+
+          // Step 3: Update the document
+          const updatedProduct = await ProductModel.findOneAndUpdate(
+            { id: item.product },
+            { remainingStock: updatedStock },
+            { new: true }
+          );
+
+          console.log(
+            "🆕 Updated product:",
+            updatedProduct.name,
+            "New remaining stock:",
+            updatedProduct.remainingStock
+          );
+        }
+      }
+    } else if (action === "reject") {
+      order.status = "rejected";
+    } else {
+      return res.status(400).json({ message: "Invalid action" });
+    }
+
+    order.processedBy = user._id;
+    await order.save();
+
+    res.status(200).json({ message: `Order ${order.status}`, order });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error updating order", error });
+  }
+};
+
+// Admin-only: get all users
+export const getUsers = async (req: any, res: Response) => {
+  try {
     const userId = req.userId;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
     const user = await UserModel.findById(userId);
-
-    if (user.isAccountVerified) {
-      res
-        .status(409)
-        .json({ success: false, message: "Account Already verified" });
-      return;
+    if (!user || user.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden: admin only" });
     }
 
-    const otp = String(Math.floor(100000 + Math.random() * 900000));
-
-    user.verifyOtp = otp;
-    user.verifyOtpExpireAt = Date.now() + 24 * 60 * 60 * 1000;
-
-    await user.save();
-
-    const mailOption = {
-      from: process.env.SENDER_EMAIL,
-      to: user.email,
-      subject: "Account varification OTP",
-      html: EMAIL_VERIFY_TEMPLATE.replace("{{otp}}", otp).replace(
-        "{{user}}",
-        user.username
-      ),
-    };
-
-    await transporter.sendMail(mailOption).catch((err) => {
-      console.error("Failed to send verification email:", err);
-    });
-
-    res
-      .status(200)
-      .json({ success: true, message: "Verifiction OTP sent on your Email" });
-    return;
+    const users = await UserModel.find().select("-password");
+    res.status(200).json({ users });
   } catch (error) {
-    console.log(error);
-
-    res.status(500).json({ success: false, message: "Internal server error" });
-    return;
+    console.error(error);
+    res.status(500).json({ message: "Error fetching users", error });
   }
 };
 
-export const verifyEmail = async (req: AuthenticatedRequest, res: Response) => {
-  const { otp } = req.body;
-  const userId = req.userId;
-
-  if (!userId || !otp) {
-    res.status(400).json({ success: false, message: "Missing Details" });
-    return;
-  }
+// Admin-only: delete a user
+export const deleteUser = async (req: any, res: Response) => {
   try {
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
     const user = await UserModel.findById(userId);
-
-    if (!user) {
-      res.status(404).json({ success: false, message: "User not found" });
-      return;
-    }
-    if (user.verifyOtp === "" || user.verifyOtp !== otp) {
-      res.status(400).json({ success: false, message: "Invalid OTP" });
-      return;
-    }
-    if (user.verifyOtpExpireAt < Date.now()) {
-      res.status(400).json({ success: false, message: "OTP Expired" });
-      return;
+    if (!user || user.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden: admin only" });
     }
 
-    user.isAccountVerified = true;
-    user.verifyOtp = "";
-    user.verifyOtpExpireAt = 0;
-
-    await user.save();
-    res
-      .status(200)
-      .json({ success: true, message: "Email verified successfully" });
-    return;
+    const targetUserId = req.params.id;
+    await UserModel.findByIdAndDelete(targetUserId);
+    res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Internal server error" });
+    console.error(error);
+    res.status(500).json({ message: "Error deleting user", error });
   }
 };
 
-export const isAuthenticated = async (req: Request, res: Response) => {
+// Admin-only: add a product
+export const addProduct = async (req: any, res: Response) => {
   try {
-    res.status(200).json({ success: true, message: "Autenticated" });
-    return;
-  } catch (error) {
-    res.status(500).json({ success: false, message: "Internal server error" });
-    return;
-  }
-};
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
-export const sendResetOtp = async (req: Request, res: Response) => {
-  const { email } = req.body;
-
-  if (!email) {
-    res.status(401).json({ success: false, message: "Email is required" });
-    return;
-  }
-
-  try {
-    const user = await UserModel.findOne({ email });
-    if (!user) {
-      res.status(401).json({ success: true, message: "User not found" });
-      return;
+    const user = await UserModel.findById(userId);
+    if (!user || user.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden: admin only" });
     }
 
-    const otp = String(Math.floor(100000 + Math.random() * 900000));
+    const { id, name, price, category, remainingStock, inStock } = req.body;
 
-    user.resetOtp = otp;
-    user.resetOtpExpiresAt = Date.now() + 15 * 60 * 1000;
-
-    await user.save();
-
-    const mailOption = {
-      from: process.env.SENDER_EMAIL,
-      to: user.email,
-      subject: "Password Reset OTP",
-      html: PASSWORD_RESET_TEMPLATE.replace("{{otp}}", otp).replace(
-        "{{user}}",
-        user.username
-      ),
-    };
-
-    await transporter.sendMail(mailOption).catch((err) => {
-      console.error("Failed to send verification email:", err);
+    const newProduct = new ProductModel({
+      id,
+      name,
+      price,
+      category,
+      remainingStock,
+      inStock: inStock ?? true,
     });
 
-    res.status(200).json({ success: true, message: "OTP sent to your email" });
-    return;
+    await newProduct.save();
+    res.status(201).json({ message: "Product added", product: newProduct });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Internal server error" });
-    return;
+    console.error(error);
+    res.status(500).json({ message: "Error adding product", error });
   }
 };
 
-export const resetPassword = async (req: Request, res: Response) => {
-  const { email, otp, newPassword } = req.body;
-
-  if (!email || !otp || !newPassword) {
-    res.status(400).json({
-      success: false,
-      message: "Email, OTP, and new password are required",
-    });
-    return;
-  }
-
+// Admin-only: update a product
+export const updateProduct = async (req: any, res: Response) => {
   try {
-    const user = await UserModel.findOne({ email });
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
-    if (!user) {
-      res.status(401).json({ success: false, message: "User not found" });
-      return;
+    const user = await UserModel.findById(userId);
+    if (!user || user.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden: admin only" });
     }
 
-    if (!user.resetOtp || user.resetOtp !== otp) {
-      res.status(401).json({ success: false, message: "Invalid OTP" });
-      return;
-    }
+    const productId = req.params.id;
+    const updates = req.body;
 
-    if (user.resetOtpExpiresAt < Date.now()) {
-      res.status(401).json({ success: false, message: "OTP Expired" });
-      return;
-    }
+    const updatedProduct = await ProductModel.findByIdAndUpdate(
+      productId,
+      updates,
+      { new: true }
+    );
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    user.password = hashedPassword;
-    user.resetOtp = "";
-    user.resetOtpExpiresAt = 0;
-
-    await user.save();
+    if (!updatedProduct)
+      return res.status(404).json({ message: "Product not found" });
 
     res
       .status(200)
-      .json({ success: true, message: "Password has been reset successfully" });
-
-    return;
+      .json({ message: "Product updated", product: updatedProduct });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Internal server error" });
-    return;
+    console.error(error);
+    res.status(500).json({ message: "Error updating product", error });
   }
 };
+
+// Admin-only: delete a product
+export const deleteProduct = async (req: any, res: Response) => {
+  try {
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+    const user = await UserModel.findById(userId);
+    if (!user || user.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden: admin only" });
+    }
+
+    const productId = req.params.id;
+    await ProductModel.findByIdAndDelete(productId);
+
+    res.status(200).json({ message: "Product deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error deleting product", error });
+  }
+};
+
+export const getProducts = async (req: any, res: Response) => {
+  try {
+    const userId = req.userId;
+    const admin = await UserModel.findById(userId);
+    if (!admin || admin.role !== "admin")
+      return res.status(403).json({ message: "Forbidden: admin only" });
+
+    const products = await ProductModel.find();
+    res.status(200).json({ products });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch products", error });
+  }
+};
+
+// Add user (admin only)
+export const addUser = async (req: Request, res: Response) => {
+  try {
+    const { name, email, role, password } = req.body;
+
+    if (!name || !email || !role || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // Check if user exists
+    const existingUser = await UserModel.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new UserModel({
+      username: name,
+      email,
+      role,
+      password: hashedPassword,
+    });
+
+    await newUser.save();
+
+    return res
+      .status(201)
+      .json({ message: "User added successfully", user: newUser });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to add user", error });
+  }
+};
+
+// export const isAuthenticated = async (req: Request, res: Response) => {
+//   try {
+//     res.status(200).json({ success: true, message: "Autenticated" });
+//     return;
+//   } catch (error) {
+//     res.status(500).json({ success: false, message: "Internal server error" });
+//     return;
+//   }
+// };
