@@ -26,8 +26,7 @@ const App = () => {
     const fetchUserData = async () => {
       try {
         const res = await axiosInstance.get(
-          import.meta.env.VITE_BACKEND_URL + "/user/getUserData",
-          { withCredentials: true }
+          import.meta.env.VITE_BACKEND_URL + "/user/getUserData"
         );
 
         setLogin(true);
