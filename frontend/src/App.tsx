@@ -16,7 +16,7 @@ import UserOrders from "./pages/UserOrders";
 import AdminPanel from "./pages/AdminPanal";
 
 const App = () => {
-  const { setLogin, setUserData, darkMode, login, userData } = useStore();
+  const { setLogin, setUserData, darkMode, login } = useStore();
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", darkMode);
