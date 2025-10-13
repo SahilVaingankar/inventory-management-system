@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { addToCart } from "../utils/cart";
 import { useStore } from "../stores/store";
 import { toast } from "react-toastify";
@@ -16,7 +16,7 @@ interface Product {
 
 const ProductPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
   const { cartPageQuantity, setCartPageQuantity } = useStore();
 

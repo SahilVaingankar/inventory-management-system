@@ -4,7 +4,7 @@ import { useStore } from "../stores/store.ts";
 
 const Searchbar = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const { filteredProducts, setProducts, filterSuggestions } = useStore();
+  const { filterSuggestions } = useStore();
 
   useEffect(() => {
     filterSuggestions(searchQuery);

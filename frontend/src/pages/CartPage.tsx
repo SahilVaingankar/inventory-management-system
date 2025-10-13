@@ -2,8 +2,7 @@ import { useState } from "react";
 // import PurchaseForm from "../components/PurchaseForm";
 import { toast } from "react-toastify";
 // import { useStore } from "../stores/store.ts";
-import { useNavigate } from "react-router-dom";
-import { BiArrowBack } from "react-icons/bi";
+// import { useNavigate } from "react-router-dom";
 import BackArrow from "../components/BackArrow";
 
 interface CartItems {
@@ -14,7 +13,7 @@ interface CartItems {
 }
 
 const CartPage = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   //   const { openPurchaseForm, purchaseFormContext } = useStore();
 
   const [cartItems, setCartItems] = useState<CartItems[]>(() => {

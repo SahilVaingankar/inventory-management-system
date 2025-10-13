@@ -1,15 +1,13 @@
-import { FaShoppingCart } from "react-icons/fa";
 import Searchbar from "./Searchbar";
 import { Link, useNavigate } from "react-router-dom";
 import { useStore } from "../stores/store";
 import axios from "axios";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import PopOver from "./PopOver";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 
 const Navbar = () => {
-  const { setLogin, darkMode, toggleMode, login, userData, setUserData } =
+  const { setLogin, darkMode, toggleMode, userData, setUserData } =
     useStore();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
