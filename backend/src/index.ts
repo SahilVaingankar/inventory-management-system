@@ -11,7 +11,7 @@ const port = process.env.PORT || 50000;
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://e-commerce-website-steel-eight.vercel.app",
+  "https://invertory-management-system.vercel.app/",
 ];
 
 app.use(express.json());
