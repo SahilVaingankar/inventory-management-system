@@ -20,6 +20,9 @@ app.use(cors({ origin: allowedOrigins, credentials: true }));
 
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
+app.get("/", (req, res) => {
+  res.send("Backend is alive!");
+});
 
 const runServer = async () => {
   await connectDB();

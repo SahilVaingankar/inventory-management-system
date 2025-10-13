@@ -38,5 +38,5 @@ authRouter.delete("/users/:id", userAuth, deleteUser);
 authRouter.post("/products", userAuth, addProduct);
 authRouter.patch("/products/:id", userAuth, updateProduct);
 authRouter.delete("/products/:id", userAuth, deleteProduct);
-authRouter.get("/products", getProduct);
+authRouter.get("/products", userAuth, getProduct);
 authRouter.post("/users", userAuth, addUser);
