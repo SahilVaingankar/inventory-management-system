@@ -43,7 +43,10 @@ const App = () => {
   }, [login]);
 
   return (
-    <div className={`${darkMode ? "dark" : ""} min-h-[100svh] min-w-[250px]`}>
+    <div
+      className={`${
+        darkMode ? "dark bg-black" : "bg-white"
+      } min-h-[100svh] min-w-[250px]`}>
       <ToastContainer
         position="top-left"
         autoClose={3000}
