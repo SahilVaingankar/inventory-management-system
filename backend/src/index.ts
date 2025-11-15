@@ -11,7 +11,7 @@ const port = process.env.PORT || 50000;
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://inventory-management-system-three-xi.vercel.app/",
+  "https://inventory-management-system-three-xi.vercel.app",
 ];
 
 app.use(express.json());
