@@ -190,7 +190,7 @@ const AdminPanel = () => {
           </button>
 
           {users.length > 0 ? (
-            <table className="w-full border">
+            <table className="w-full border dark:bg-white">
               <thead>
                 <tr className="border-b">
                   <th className="p-2 text-left">Name</th>
