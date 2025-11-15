@@ -37,7 +37,9 @@ const StaffOrders = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-semibold mb-6">Pending Orders</h1>
+      <h1 className="text-2xl font-semibold mb-6 dark:text-white">
+        Pending Orders
+      </h1>
       {orders.length > 0 ? (
         orders.map((order: any) => (
           <OrderCard
@@ -49,7 +51,7 @@ const StaffOrders = () => {
           />
         ))
       ) : (
-        <p>No orders found.</p>
+        <p className="dark:text-white">No orders found.</p>
       )}
     </div>
   );

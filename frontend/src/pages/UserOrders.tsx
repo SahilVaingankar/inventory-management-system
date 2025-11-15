@@ -19,11 +19,11 @@ const UserOrders = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-semibold mb-6">My Orders</h1>
+      <h1 className="text-2xl font-semibold mb-6 dark:text-white">My Orders</h1>
       {orders.length > 0 ? (
         orders.map((order: any) => <OrderCard key={order._id} order={order} />)
       ) : (
-        <p>No orders yet.</p>
+        <p className="dark:text-white">No orders yet.</p>
       )}
     </div>
   );
