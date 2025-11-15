@@ -69,14 +69,14 @@ export const register = async (req: Request, res: Response) => {
     res.cookie("device_id", deviceId, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      sameSite: process.env.NODE_ENV === "none",
       maxAge: 1000 * 60 * 60 * 24 * 365,
     });
 
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      sameSite: process.env.NODE_ENV === "none",
       maxAge: 15 * 60 * 1000,
     });
 
@@ -159,7 +159,7 @@ export const login = async (req: Request, res: Response) => {
     res.cookie("device_id", deviceId, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      sameSite: process.env.NODE_ENV === "none",
       maxAge: 1000 * 60 * 60 * 24 * 365,
     });
 
@@ -180,7 +180,7 @@ export const login = async (req: Request, res: Response) => {
       .cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+        sameSite: process.env.NODE_ENV === "none",
         maxAge: 15 * 60 * 1000,
       })
       .status(200)
@@ -210,14 +210,14 @@ export const logout = async (req: Request, res: Response) => {
     res.clearCookie("device_id", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      sameSite: process.env.NODE_ENV === "none",
     });
 
     res
       .clearCookie("accessToken", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+        sameSite: process.env.NODE_ENV === "none",
       })
       .status(200)
       .json({ success: true, message: "Logout Successful" });
@@ -295,7 +295,7 @@ export const refresh = async (req: Request, res: Response) => {
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      sameSite: process.env.NODE_ENV === "none",
       maxAge: 15 * 60 * 1000,
     });
 
