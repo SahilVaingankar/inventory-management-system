@@ -160,7 +160,9 @@ const AdminPanel = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-semibold mb-6">Admin Panel</h1>
+      <h1 className="text-2xl font-semibold mb-6 dark:text-white">
+        Admin Panel
+      </h1>
 
       <div className="flex gap-4 mb-6">
         <button
@@ -246,7 +248,7 @@ const AdminPanel = () => {
                     <td className="p-2">{product.category}</td>
                     <td className="p-2">₹{product.price}</td>
                     <td className="p-2">{product.remainingStock}</td>
-                    <td className="p-2 flex gap-2">
+                    <td className="p-2 flex gap-2 items-center justify-center">
                       <button
                         className="bg-blue-500 text-white px-2 py-1 rounded"
                         onClick={() => handleUpdateProduct(product)}>
