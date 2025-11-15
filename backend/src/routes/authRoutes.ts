@@ -14,13 +14,13 @@ import {
   updateProduct,
   deleteProduct,
   addUser,
+  getProduct,
 } from "../controllers/authController";
 import { userAuth } from "../middleware/userAuth";
 import {
   LoginValidation,
   RegistrationValidation,
 } from "../middleware/FormValidation";
-import { getProduct } from "../controllers/userController";
 
 export const authRouter = Router();
 

@@ -234,6 +234,20 @@ const verifyJwt = (token: string, secret: string) => {
   }
 };
 
+export const getProduct = async (req: Request, res: Response) => {
+  try {
+    // Logic to fetch product data from the database
+    const products = await ProductModel.find(); // Assuming ProductModel is defined and imported
+    res.status(200).json({
+      success: true,
+      products, // send the array of products
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Internal server error" });
+    return;
+  }
+};
+
 export const refresh = async (req: Request, res: Response) => {
   try {
     const { device_id } = req.cookies;
