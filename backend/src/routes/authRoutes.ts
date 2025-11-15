@@ -1,4 +1,4 @@
-import Router from "express";
+import { Router } from "express";
 import { RequestHandler } from "express";
 import {
   refresh,
@@ -20,7 +20,7 @@ import {
   LoginValidation,
   RegistrationValidation,
 } from "../middleware/FormValidation";
-import { getProduct } from "../controllers/userController";
+// import { getProduct } from "../controllers/userController";
 
 export const authRouter = Router();
 
@@ -38,5 +38,5 @@ authRouter.delete("/users/:id", userAuth, deleteUser);
 authRouter.post("/products", userAuth, addProduct);
 authRouter.patch("/products/:id", userAuth, updateProduct);
 authRouter.delete("/products/:id", userAuth, deleteProduct);
-authRouter.get("/products", userAuth, getProduct);
+// authRouter.get("/products", userAuth, getProduct);
 authRouter.post("/users", userAuth, addUser);

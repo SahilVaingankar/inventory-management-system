@@ -25,8 +25,8 @@ const ProductPage: React.FC = () => {
       axios
         .get(import.meta.env.VITE_BACKEND_URL + `/user/getProduct/${id}`)
         .then((response) => {
-          setProduct(response.data?.products);
-          // console.log(response?.data?.products.name);
+          setProduct(response.data?.product);
+          console.log(response.data?.product);
         })
         .catch((error) => {
           console.error("Error fetching product data: ", error);

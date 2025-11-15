@@ -46,14 +46,14 @@ export const getProductData = async (req: Request, res: Response) => {
   }
 };
 
-export const getProduct = async (req: Request, res: Response) => {
+export const getProductDetails = async (req: Request, res: Response) => {
   try {
     // Logic to fetch product data from the database
-    const products = await ProductModel.find({ id: req.params.id }); // Assuming ProductModel is defined and imported
+    const product = await ProductModel.findOne({ id: req.params.id }); // Assuming ProductModel is defined and imported
 
     res.status(200).json({
       success: true,
-      products, // send the array of products
+      product, // send the array of products
     });
   } catch (error) {
     res.status(500).json({ success: false, message: "Internal server error" });

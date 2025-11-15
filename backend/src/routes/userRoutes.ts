@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
-  getProduct,
   getProductData,
+  getProductDetails,
   getUserData,
 } from "../controllers/userController";
 import { userAuth } from "../middleware/userAuth";
@@ -16,4 +16,5 @@ userRouter.get(
 );
 
 userRouter.get("/getProductData", getProductData);
-userRouter.get("/getProduct/:id", getProduct);
+userRouter.get("/getProduct/:id", getProductDetails);
+// userRouter.get("/products", userAuth, getProductData);
