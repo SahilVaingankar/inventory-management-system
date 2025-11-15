@@ -404,8 +404,10 @@ export const updateOrderStatus = async (req: any, res: Response) => {
     // fetch full user object
     const user = await UserModel.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
-    if (!user || user.role !== "staff") {
-      return res.status(403).json({ message: "Forbidden: staff only" });
+    if (!user || (user.role !== "staff" && user.role !== "admin")) {
+      return res
+        .status(403)
+        .json({ message: "Forbidden: staff or admins only" });
     }
 
     const order = await OrderModel.findById(orderId);

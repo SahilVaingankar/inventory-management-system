@@ -205,7 +205,7 @@ const AdminPanel = () => {
                     <td className="p-2">{user.username}</td>
                     <td className="p-2">{user.email}</td>
                     <td className="p-2">{user.role}</td>
-                    <td className="p-2">
+                    <td className="p-2 text-center">
                       <button
                         className="bg-red-500 text-white px-2 py-1 rounded"
                         onClick={() => handleDeleteUser(user._id)}>
@@ -229,7 +229,7 @@ const AdminPanel = () => {
           </button>
 
           {products.length > 0 ? (
-            <table className="w-full border">
+            <table className="w-full border dark:bg-white">
               <thead>
                 <tr className="border-b">
                   <th className="p-2 text-left">Name</th>
