@@ -20,7 +20,7 @@ import {
   LoginValidation,
   RegistrationValidation,
 } from "../middleware/FormValidation";
-import { getProductData } from "../controllers/userController";
+import { getProduct } from "../controllers/userController";
 
 export const authRouter = Router();
 
@@ -38,5 +38,5 @@ authRouter.delete("/users/:id", userAuth, deleteUser);
 authRouter.post("/products", userAuth, addProduct);
 authRouter.patch("/products/:id", userAuth, updateProduct);
 authRouter.delete("/products/:id", userAuth, deleteProduct);
-authRouter.get("/products", userAuth, getProductData);
+authRouter.get("/products", userAuth, getProduct);
 authRouter.post("/users", userAuth, addUser);
