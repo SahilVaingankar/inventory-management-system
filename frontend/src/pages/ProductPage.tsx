@@ -36,7 +36,7 @@ const ProductPage: React.FC = () => {
 
   if (!product) return <div>Loading...</div>;
 
-  console.log(product);
+  console.log("loaded:", product);
 
   return (
     <>
