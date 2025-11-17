@@ -7,8 +7,7 @@ import { toast } from "react-toastify";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 
 const Navbar = () => {
-  const { setLogin, darkMode, toggleMode, userData, setUserData } =
-    useStore();
+  const { setLogin, darkMode, toggleMode, userData, setUserData } = useStore();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);
@@ -60,11 +59,15 @@ const Navbar = () => {
             } group-hover:block top-0 right-0 text-black rounded pt-10 -z-10`}>
             <ul className="list-none m-0 p-2 bg-gray-100 text-sm dark:bg-gray-900 dark:text-white">
               {userData.role !== "user" ? (
-                <li className="py-1 px-2 dark:hover:bg-gray-700 hover:bg-gray-200 cursor-pointer group">
+                <li
+                  onClick={() => console.log("clicked")}
+                  className="py-1 px-2 dark:hover:bg-gray-700 hover:bg-gray-200 cursor-pointer group">
                   <Link to="/stafforders">Orders</Link>
                 </li>
               ) : (
-                <li className="py-1 px-2 dark:hover:bg-gray-700 hover:bg-gray-200 cursor-pointer group">
+                <li
+                  onClick={() => console.log("clicked")}
+                  className="py-1 px-2 dark:hover:bg-gray-700 hover:bg-gray-200 cursor-pointer group">
                   <Link to="/userorders">Orders</Link>
                 </li>
               )}
