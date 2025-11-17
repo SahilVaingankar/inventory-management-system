@@ -54,7 +54,7 @@ const Cards = ({
       toast.success(res.data?.message);
       console.log("waiting for res");
 
-      console.log(res);
+      console.log(res.data?.message);
     } catch (error) {
       toast.success(`failed to place order`);
     }
