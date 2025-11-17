@@ -51,7 +51,7 @@ const Cards = ({
         }
       );
       // toast.success(res.request?.message);
-      toast.success(res.request?.message);
+      toast.success(res.data?.message);
       console.log("waiting for res");
 
       console.log(res);
