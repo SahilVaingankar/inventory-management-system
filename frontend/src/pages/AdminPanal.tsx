@@ -41,7 +41,7 @@ const AdminPanel = () => {
   const fetchProducts = async () => {
     try {
       const res = await axiosInstance.get(
-        import.meta.env.VITE_BACKEND_URL + "/auth/products"
+        import.meta.env.VITE_BACKEND_URL + "/auth/getproducts"
       );
       setProducts(res.data.products || []);
     } catch (error) {

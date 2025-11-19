@@ -418,6 +418,7 @@ export const updateOrderStatus = async (req: any, res: Response) => {
     // fetch full user object
     const user = await UserModel.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
+
     if (!user || (user.role !== "staff" && user.role !== "admin")) {
       return res
         .status(403)
@@ -611,7 +612,11 @@ export const deleteProduct = async (req: any, res: Response) => {
 export const getProducts = async (req: any, res: Response) => {
   try {
     const userId = req.userId;
+    console.log(userId);
+
     const admin = await UserModel.findById(userId);
+    console.log(admin);
+
     if (!admin || admin.role !== "admin")
       return res.status(403).json({ message: "Forbidden: admin only" });
 
