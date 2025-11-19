@@ -5,6 +5,7 @@ import { addToCart } from "../utils/cart";
 import { FaCartPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../services/axios";
+import image from "../assets/Untitled.png";
 
 interface CardsProps {
   id: number;
@@ -63,8 +64,15 @@ const Cards = ({
   return (
     <div className="flex flex-col border p-2 gap-1 rounded-md w-full h-full">
       {/* Skeleton image */}
-      <div
+      {/* <div
         className="bg-gray-200 animate-pulse min-w-25 h-25  sm:h-40 md:h-50 rounded-md cursor-pointer"
+        onClick={() => {
+          navigate(`/product/${id}`);
+        }}
+      /> */}
+      <img
+        className="min-w-25 h-25  sm:h-40 md:h-50 rounded-md cursor-pointer"
+        src={image}
         onClick={() => {
           navigate(`/product/${id}`);
         }}
